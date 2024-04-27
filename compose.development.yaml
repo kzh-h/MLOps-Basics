@@ -1,0 +1,25 @@
+name: mlops-basics-development
+
+services:
+  mlops-basics-development:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - IMAGE_NAME=${IMAGE_NAME:-python:3.12.3-slim-bullseye}
+        - USER_NAME=${USER_NAME:-vscode}
+        - USER_UID=${USER_UID}
+        - USER_GID=${USER_GID}
+    image: ${COMPOSE_PROJECT_NAME}-development:${TAGS}
+    container_name: ${COMPOSE_PROJECT_NAME}-development
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+      - type: bind
+        source: ./.ssh
+        target: ~/.ssh
+    ports:
+      - "6006:6006"
+    user: ${USER_NAME:-vscode}
+    tty: true

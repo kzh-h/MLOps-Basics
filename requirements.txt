@@ -1,0 +1,6 @@
+pytorch-lightning==2.2.3
+datasets==2.19.0
+transformers==4.40.1
+scikit-learn==1.4.2
+ruff==0.4.2
+tensorboard==2.16.2

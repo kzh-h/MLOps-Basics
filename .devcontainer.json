@@ -1,0 +1,91 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.238.0/containers/docker-existing-docker-compose
+// If you want to run as a non-root user in the container, see .devcontainer/docker-compose.yml.
+{
+    "name": "mlops-basics",
+    // Update the 'dockerComposeFile' list if you have more compose files or use different names.
+    // The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
+    "dockerComposeFile": [
+        "./compose.development.yaml"
+    ],
+    // The 'service' property is the name of the service for the container that VS Code should
+    // use. Update this value and .devcontainer/docker-compose.yml to the real service name.
+    "service": "mlops-basics-development",
+    // The optional 'workspaceFolder' property is the path VS Code should open by default when
+    // connected. This is typically a file mount in .devcontainer/docker-compose.yml
+    "workspaceFolder": "/app",
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    // "forwardPorts": [],
+    // Uncomment the next line if you want start specific services in your Docker Compose config.
+    // "runServices": [],
+    // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
+    "shutdownAction": "none",
+    // Uncomment the next line to run commands after the container is created - for example installing curl.
+    // "postCreateCommand": "apt-get update && apt-get install -y curl",
+    // Uncomment to connect as a non-root user if you've added one. See https://aka.ms/vscode-remote/containers/non-root.
+    // "remoteUser": "vscode",
+    // "settings": {
+    // },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                // 共通
+                // // csvファイルの色付け
+                // "mechatroner.rainbow-csv",
+                // 全角スペース可視化
+                "mosapride.zenkaku",
+                // 選択した文字数のカウント
+                "mousetraps.selected-character-count",
+                // vscodeの日本語化
+                "MS-CEINTL.vscode-language-pack-ja",
+                // インデントの色付け
+                "oderwat.indent-rainbow",
+                // // マークダウンファイルの変換
+                // "yzane.markdown-pdf",
+                // // エクセルのプレビュー
+                // "grapecity.gc-excelviewer",
+                // ズームバー
+                "wraith13.zoombar-vscode",
+                // // makefile_tools
+                // "ms-vscode.makefile-tools",
+                // パスの予測変換
+                "christian-kohler.path-intellisense",
+                // // PDF Viwer
+                // "tomoki1207.pdf",
+                // git
+                "donjayamanne.githistory",
+                // git lens
+                "eamodio.gitlens",
+                // エラーの可視化
+                "usernamehw.errorlens",
+                // TODOハイライト
+                "gruntfuggly.todo-tree",
+                // コメント色付け
+                "aaron-bond.better-comments",
+                // // 部分的なコードの実行
+                // "formulahendry.code-runner",
+                // markdown linter
+                "davidanson.vscode-markdownlint",
+                // iconの変更
+                "pkief.material-icon-theme",
+                // // drow.io
+                // "hediet.vscode-drawio",
+                // // yaml
+                // "redhat.vscode-yaml",
+                // python
+                // python
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-toolsai.jupyter",
+                // ruff
+                "charliermarsh.ruff",
+                // // isort
+                // "ms-python.isort",
+                // // ステップ実行、オブジェクトのビジュアル化
+                // "dongli.python-preview",
+                // docstringの自動生成
+                "njpwerner.autodocstring"
+            ]
+        }
+    }
+}
