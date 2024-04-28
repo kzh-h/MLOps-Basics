@@ -130,4 +130,6 @@ dmypy.json
 
 logs/
 models/
+wandb/
+
 .ssh/id_rsa
