@@ -131,5 +131,6 @@ dmypy.json
 logs/
 models/
 wandb/
+outputs/
 
 .ssh/id_rsa
