@@ -1,6 +1,10 @@
+import logging
+
+import hydra
 import pandas as pd
 import pytorch_lightning as pl
 import torch
+from omegaconf.omegaconf import OmegaConf
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.loggers import WandbLogger
@@ -8,6 +12,8 @@ from pytorch_lightning.loggers import WandbLogger
 import wandb
 from data import DataModule
 from model import ColaModel
+
+logger = logging.getLogger(__name__)
 
 
 class SamplesVisualisationLogger(pl.Callback):
@@ -39,13 +45,23 @@ class SamplesVisualisationLogger(pl.Callback):
         )
 
 
-def main():
-    cola_data = DataModule()
-    cola_model = ColaModel()
+@hydra.main(config_path="./configs", config_name="config")
+def main(cfg):
+    logger.info(OmegaConf.to_yaml(cfg, resolve=True))
+    logger.info(f"Using the model: {cfg.model.name}")
+    logger.info(f"Using the tokenizer: {cfg.model.tokenizer}")
+
+    cola_data = DataModule(
+        model_name=cfg.model.tokenizer,
+        batch_size=cfg.processing.batch_size,
+        max_length=cfg.processing.max_length,
+        num_worker=cfg.processing.num_worker,
+    )
+    cola_model = ColaModel(cfg.model.name)
 
     checkpoint_callback = ModelCheckpoint(
         dirpath="./models",
-        filename="best-checkpoint.ckpt",
+        filename="best-checkpoint",
         monitor="valid/loss",
         mode="min",
     )
@@ -56,19 +72,20 @@ def main():
 
     wandb_logger = WandbLogger(project="MLOps-Basics")
     trainer = pl.Trainer(
-        max_epochs=1,
+        max_epochs=cfg.training.max_epochs,
         logger=wandb_logger,
         callbacks=[
             checkpoint_callback,
             SamplesVisualisationLogger(cola_data),
             early_stopping_callback,
         ],
-        log_every_n_steps=10,
-        deterministic=True,
-        # limit_train_batches=0.25,
-        # limit_val_batches=0.25
+        log_every_n_steps=cfg.training.log_every_n_steps,
+        deterministic=cfg.training.deterministic,
+        limit_train_batches=cfg.training.limit_train_batches,
+        limit_val_batches=cfg.training.limit_val_batches,
     )
     trainer.fit(cola_model, cola_data)
+    wandb.finish()
 
 
 if __name__ == "__main__":

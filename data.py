@@ -7,10 +7,18 @@ from transformers import AutoTokenizer
 
 
 class DataModule(pl.LightningDataModule):
-    def __init__(self, model_name="google/bert_uncased_L-2_H-128_A-2", batch_size=32):
+    def __init__(
+        self,
+        model_name="google/bert_uncased_L-2_H-128_A-2",
+        batch_size=32,
+        max_length=128,
+        num_worker=0,
+    ):
         super().__init__()
 
         self.batch_size = batch_size
+        self.max_length = max_length
+        self.num_worker = num_worker
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     def prepare_data(self):
@@ -39,11 +47,13 @@ class DataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
         return torch.utils.data.DataLoader(
-            self.train_data, batch_size=self.batch_size, shuffle=True
+            self.train_data, batch_size=self.batch_size, shuffle=True, num_workers=self.num_worker
         )
 
     def val_dataloader(self):
-        return torch.utils.data.DataLoader(self.val_data, batch_size=self.batch_size, shuffle=False)
+        return torch.utils.data.DataLoader(
+            self.val_data, batch_size=self.batch_size, shuffle=False, num_workers=self.num_worker
+        )
 
 
 if __name__ == "__main__":
