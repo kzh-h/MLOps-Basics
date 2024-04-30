@@ -20,7 +20,7 @@ RUN groupadd --gid $USER_GID $USER_NAME \
 ENV LC_ALL=C.UTF-8 \
     LANG=C.UTF-8
 
-COPY ./ /app
+COPY requirements.txt /app/requirements.txt
 WORKDIR /app
 
 RUN pip install --no-cache-dir -r requirements.txt
