@@ -20,7 +20,8 @@ services:
         source: ./.ssh
         target: /home/${USER_NAME}/.ssh
     ports:
-      - "6006:6006"
-      - "8080:8080"
+      - "6006:6006"  # tensorboard
+      - "8000:8000"  # fastapi
+      - "8080:8080"  # dvc[gdrive]
     user: ${USER_NAME:-vscode}
     tty: true
