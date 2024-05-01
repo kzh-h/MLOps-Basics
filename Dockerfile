@@ -47,7 +47,7 @@ ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
     AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 
 # HACK
-RUN python -m dvc pull outputs/2024-04-28/07-11-42/models/best-checkpoint.ckpt.dvc
+RUN python -m dvc pull outputs/2024-04-28/07-11-42/models/model.onnx.dvc
 
 EXPOSE 8000
 CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
