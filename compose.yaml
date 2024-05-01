@@ -1,7 +1,7 @@
-name: mlops-basics-deploy
+name: mlops-basics
 
 services:
-  mlops-basics-deploy:
+  mlops-basics:
     build:
       context: .
       dockerfile: Dockerfile
