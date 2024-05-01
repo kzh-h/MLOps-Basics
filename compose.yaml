@@ -7,23 +7,13 @@ services:
       dockerfile: Dockerfile
       target: deploy
       args:
-        - IMAGE_NAME=${IMAGE_NAME:-python:3.11.9-slim-bullseye}
-        - SLIM_IMAGE_NAME=${SLIM_IMAGE_NAME:-python:3.11.9-slim-bullseye}
-        - USER_NAME=${USER_NAME:-vscode}
-        - USER_UID=${USER_UID}
-        - USER_GID=${USER_GID}
-    image: ${COMPOSE_PROJECT_NAME}-deploy:${TAGS}
+        - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+        - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    image: ${COMPOSE_PROJECT_NAME}-deploy
     container_name: ${COMPOSE_PROJECT_NAME}-deploy
-    # volumes:
-    #   - type: bind
-    #     source: .
-    #     target: /app
-    #   - type: bind
-    #     source: ./.ssh
-    #     target: /home/${USER_NAME}/.ssh
     ports:
-      # - "6006:6006"  # tensorboard
       - "8000:8000" # fastapi
-      # - "8080:8080"  # dvc[gdrive]
-      # user: ${USER_NAME:-vscode}
     tty: true
