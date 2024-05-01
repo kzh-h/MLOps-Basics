@@ -15,3 +15,5 @@ onnx==1.16.0
 onnxscript
 fastapi==0.110.3
 uvicorn==0.29.0
+dvc[gdrive]
+dvc[s3]
