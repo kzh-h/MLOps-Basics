@@ -1,9 +1,18 @@
 ARG IMAGE_NAME
+ARG SLIM_IMAGE_NAME
 ARG USER_NAME
 ARG USER_UID
 ARG USER_GID
 
-FROM ${IMAGE_NAME}
+FROM ${IMAGE_NAME} as builder
+
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# development
+FROM builder as development
+
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 
 ARG USER_NAME=${USER_NAME}
 ARG USER_UID=${USER_UID}
@@ -20,9 +29,23 @@ RUN groupadd --gid $USER_GID $USER_NAME \
 ENV LC_ALL=C.UTF-8 \
     LANG=C.UTF-8
 
-COPY requirements.txt /app/requirements.txt
+COPY requirements.development.txt /app/requirements.development.txt
 WORKDIR /app
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.development.txt
 
 USER $USER_NAME
+
+# deploy
+FROM ${SLIM_IMAGE_NAME} as deploy
+
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+
+COPY ./ /app
+WORKDIR /app
+
+ENV LC_ALL=C.UTF-8 \
+    LANG=C.UTF-8
+
+EXPOSE 8000
+CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]

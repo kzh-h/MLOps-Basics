@@ -1,0 +1,2 @@
+ruff==0.4.2
+dvc[gdrive]
