@@ -3,6 +3,7 @@ FROM python:3.11.9-bullseye as builder
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+
 # development
 FROM builder as development
 
@@ -30,13 +31,11 @@ RUN pip install --no-cache-dir -r requirements.development.txt
 
 USER $USER_NAME
 
+
 # deploy
-FROM python:3.11.9-slim-bullseye as deploy
+FROM amazon/aws-lambda-python:3.11 as deploy
 
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-
-COPY ./ /app
-WORKDIR /app
 
 ENV LC_ALL=C.UTF-8 \
     LANG=C.UTF-8
@@ -46,8 +45,19 @@ ARG AWS_SECRET_ACCESS_KEY
 ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
     AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 
+RUN yum install git -y && yum -y install gcc-c++
+
+COPY ./ ./
+ENV PYTHONPATH "${PYTHONPATH}:./"
+
 # HACK
 RUN python -m dvc pull outputs/2024-04-28/07-11-42/models/model.onnx.dvc
 
-EXPOSE 8000
-CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Download the tokenizer required and saves it in the cache.
+ENV TRANSFORMERS_CACHE=outputs/2024-04-28/07-11-42/models \
+    TRANSFORMERS_VERBOSITY=error
+RUN python lambda_handler.py
+
+RUN chmod -R outputs/2024-04-28/07-11-42/models
+
+CMD ["lambda_handler.lambda_handler"]
