@@ -33,7 +33,7 @@ USER $USER_NAME
 
 
 # deploy
-FROM amazon/aws-lambda-python:3.12 as deploy
+FROM python:3.11 as deploy
 
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 
@@ -45,20 +45,26 @@ ARG AWS_SECRET_ACCESS_KEY
 ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
     AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 
-RUN yum install git -y && yum -y install gcc-c++
+# AWS Lambdaランタイムインターフェースエミュレータのinstall
+ADD https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/download/v1.18/aws-lambda-rie /usr/bin/aws-lambda-rie
+COPY entry.sh "/entry.sh"
+RUN chmod 755 /usr/bin/aws-lambda-rie /entry.sh
 
-COPY ./ /app
-ENV PYTHONPATH "${PYTHONPATH}:/app:./:/usr/local/lib/python3.11/site-packages"
-WORKDIR /app
+ARG APP_DIR="/var/task/"
+WORKDIR ${APP_DIR}
+COPY ./ ${APP_DIR}
+ENV PYTHONPATH "${PYTHONPATH}:./:/usr/local/lib/python3.11/site-packages"
 
-# HACK
-RUN python -m dvc pull outputs/2024-04-28/07-11-42/models/model.onnx.dvc
+RUN pip install awslambdaric
+
+RUN dvc pull outputs/2024-04-28/07-11-42/models/model.onnx.dvc
 
 # Download the tokenizer required and saves it in the cache.
 ENV TRANSFORMERS_CACHE=outputs/2024-04-28/07-11-42/models \
     TRANSFORMERS_VERBOSITY=error
 RUN python lambda_handler.py
 
-RUN chmod -R outputs/2024-04-28/07-11-42/models
+RUN chmod -R 755 outputs/2024-04-28/07-11-42/models
 
-CMD ["lambda_handler.lambda_handler"]
+ENTRYPOINT [ "/bin/bash", "/entry.sh" ]
+CMD ["local_lambda.handler"]
