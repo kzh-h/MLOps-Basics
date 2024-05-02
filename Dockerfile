@@ -48,7 +48,7 @@ ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
 RUN yum install git -y && yum -y install gcc-c++
 
 COPY ./ ./
-ENV PYTHONPATH "${PYTHONPATH}:./"
+ENV PYTHONPATH "${PYTHONPATH}:./:/usr/local/lib/python3.11/site-packages"
 
 # HACK
 RUN python -m dvc pull outputs/2024-04-28/07-11-42/models/model.onnx.dvc
