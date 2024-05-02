@@ -57,7 +57,8 @@ ENV PYTHONPATH "${PYTHONPATH}:./:/usr/local/lib/python3.11/site-packages"
 
 RUN pip install awslambdaric
 
-RUN dvc pull outputs/2024-04-28/07-11-42/models/model.onnx.dvc
+# HACK
+RUN python -m dvc pull outputs/2024-04-28/07-11-42/models/model.onnx.dvc
 
 # Download the tokenizer required and saves it in the cache.
 ENV TRANSFORMERS_CACHE=outputs/2024-04-28/07-11-42/models \
