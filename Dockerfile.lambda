@@ -1,0 +1,15 @@
+FROM python:3.11
+
+# AWS Lambdaランタイムインターフェースエミュレータのinstall
+ADD https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/download/v1.18/aws-lambda-rie /usr/bin/aws-lambda-rie
+COPY entry.sh "/entry.sh"
+RUN chmod 755 /usr/bin/aws-lambda-rie /entry.sh
+
+ARG APP_DIR="/var/task/"
+WORKDIR ${APP_DIR}
+COPY ./ ${APP_DIR}
+
+RUN pip install awslambdaric
+
+ENTRYPOINT [ "/bin/bash", "/entry.sh" ]
+CMD ["local_lambda.handler"]
